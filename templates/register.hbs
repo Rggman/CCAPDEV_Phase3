@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameRevs</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <header>
+            <nav class="navbar section-content">
+                <a href="#" class="nav-logo">
+                    <h2 class="logo-text">GameRevs</h2>
+                </a>
+                <ul class="nav-menu">
+                    {{#if (eq user.profileType "Admin")}}
+                        <li class="nav-item">
+                            <a href="/adminhome" class="nav-link">Admin</a>
+                        </li>
+                    {{/if}}
+
+                    {{#if (eq user.profileType "Guest")}}
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link">Log In</a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item">
+                            <a href="/logout" class="nav-link">Log Out</a>
+                        </li>
+                    {{/if}}
+
+                    <li class="nav-item">
+                        <a href="/home" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                    <a href="/gamespage" class="nav-link">Games</a>
+                    </li>
+                    <li class="nav-item search-bar">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
+                        <div class="search-results" id="search-results"></div> <!-- Suggestions appear here -->
+                        </div>
+                    </li>
+                    <li class="nav-item profile-picture">
+                        {{#if (neq user.profileType "Guest")}}
+                            <a href="/profile/{{user.username}}">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{else}}
+                            <a href="/profile">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{/if}}
+                    </li>
+                </ul>
+            </nav>
+        </header>
+    <script src="/js/search.js"></script>
+
+    <main class="register-container">
+        <form class="register-form" action="/register" method="post">
+            <h2>Sign Up</h2>
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="input-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+            </div>
+            <button type="submit" class="register-button">Sign Up</button>
+            <p class="login-link">Already have an account? <a href="/login">Log in here</a></p>
+        </form>
+    </main>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{#if errorMessage}}
+        <script>
+            window.onload = function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: "{{{errorMessage}}}",
+                    confirmButtonColor: '#d33'
+                });
+            };
+        </script>
+    {{/if}}
+
+
+</body>
+</html>

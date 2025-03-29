@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GameRevs</title>   
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    </head>
+
+    <body>
+        <!-- Header (Navigation Menu) -->
+        <header>
+            <nav class="navbar section-content">
+                <a href="#" class="nav-logo">
+                    <h2 class="logo-text">GameRevs</h2>
+                </a>
+                <ul class="nav-menu">
+                    {{#if (eq user.profileType "Admin")}}
+                        <li class="nav-item">
+                            <a href="/adminhome" class="nav-link">Admin</a>
+                        </li>
+                    {{/if}}
+
+                    {{#if (eq user.profileType "Guest")}}
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link">Log In</a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item">
+                            <a href="/logout" class="nav-link">Log Out</a>
+                        </li>
+                    {{/if}}
+
+                    <li class="nav-item">
+                        <a href="/home" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                    <a href="/gamespage" class="nav-link">Games</a>
+                    </li>
+                    <li class="nav-item search-bar">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
+                        <div class="search-results" id="search-results"></div> 
+                        </div>
+                    </li>
+                    <li class="nav-item profile-picture">
+                        {{#if (neq user.profileType "Guest")}}
+                            <a href="/profile/{{user.username}}">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{else}}
+                            <a href="/profile">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{/if}}
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="admin-container">
+            <aside class="aside-admin">
+                <h2>Admin Panel</h2>
+                <ul class="nav-admin">
+                    <li class="admin-item">
+                        <a href="/adminhome">Home</a>
+                    </li>
+                    <li class="admin-item">
+                        <a href="/admingame">Manage Games</a>
+                    </li>
+                    <li class="admin-item">
+                        <a href="/adminuser">Manage Users</a>
+                    </li>
+                </ul>
+            </aside>
+    
+            <main class="main-admin">
+                <div class="admin-home">Good day, admin!</div>
+            </main>
+        </div>
+        
+        <script src="/js/search.js"></script>
+
+    </body>
+</html>

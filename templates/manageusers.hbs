@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameRevs</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    </head>
+    <body>
+        <header>
+            <nav class="navbar section-content">
+                <a href="#" class="nav-logo">
+                    <h2 class="logo-text">GameRevs</h2>
+                </a>
+                <ul class="nav-menu">
+                    {{#if (eq user.profileType "Admin")}}
+                        <li class="nav-item">
+                            <a href="/adminhome" class="nav-link">Admin</a>
+                        </li>
+                    {{/if}}
+
+                    {{#if (eq user.profileType "Guest")}}
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link">Log In</a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item">
+                            <a href="/logout" class="nav-link">Log Out</a>
+                        </li>
+                    {{/if}}
+
+                    <li class="nav-item">
+                        <a href="/home" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                    <a href="/gamespage" class="nav-link">Games</a>
+                    </li>
+                    <li class="nav-item search-bar">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
+                        <div class="search-results" id="search-results"></div> 
+                        </div>
+                    </li>
+                    <li class="nav-item profile-picture">
+                        {{#if (neq user.profileType "Guest")}}
+                            <a href="/profile/{{user.username}}">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{else}}
+                            <a href="/profile">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{/if}}
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+            <!-- MAIN CONTENT -->
+
+        <main>
+            <div class="profile-container">
+                <h2>Manage User</h2>
+                <div class="profile-info">
+                    <img src="{{userManage.profilePicture}}" class="profile-img" id="profile-img-preview">
+                    <div class="profile-meta">
+                        <p class="profile-name-admin">{{userManage.username}}</p>
+                        <p class="profile-bio-admin" id="bio-text">{{userManage.profileBio}}</p>
+                    </div>
+                </div>
+
+
+                <div class="btn-container">
+                    {{#if (eq userManage.profileType "User")}}
+                        <button type="button" class="btn-promote" data-id="{{userManage._id}}">Promote</button>
+                    {{/if}}
+                    <button type="button" class="btn-cancel" onclick="location.href='/adminuser'">Cancel</button>
+                    {{#unless (eqAString userManage._id user._id)}}
+                        <button type="button" class="btn-delete" data-id="{{userManage._id}}">Delete</button>
+                    {{/unless}}
+                </div>
+            </div>
+        </main>
+        <script>
+            document.querySelector('.btn-promote').addEventListener('click', function () {
+                if (confirm('Are you sure you want to promote this user to Admin?')) {
+                    const userID = this.getAttribute('data-id');
+
+                    fetch(`/promote-user/${userID}`, {
+                        method: 'PUT'
+                    })
+                    .then(response => {
+                        
+                        window.location.href = '/adminuser?success=User Promoted Successfully!';
+                    })
+                    .catch(err => {
+                        console.error("Error promoting user:", err);
+                        window.location.href = '/adminuser?error=Failed to promote user.';
+                    });
+                }
+            });
+        </script>
+        <script>
+            document.querySelector('.btn-delete').addEventListener('click', function () {
+                if (confirm('Are you sure you want to delete this user?')) {
+                    
+                    const userID = this.getAttribute('data-id');
+
+                   
+                    fetch(`/delete-user/${userID}`, {
+                        method: 'DELETE',
+                    })
+                    .then(response => {
+                       
+                        window.location.href = '/adminuser?success=User Deleted Successfully!';
+                    })
+                    .catch(err => {
+                        console.error("Error deleting user:", err);
+                        window.location.href = '/adminuser?error=Failed to delete user';
+                    });
+                }
+            });
+        </script>
+
+        <script src="/js/search.js"></script>
+        
+    </body>
+</html>

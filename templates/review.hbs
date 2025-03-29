@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameRevs</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <header>
+            <nav class="navbar section-content">
+                <a href="#" class="nav-logo">
+                    <h2 class="logo-text">GameRevs</h2>
+                </a>
+                <ul class="nav-menu">
+                    {{#if (eq user.profileType "Admin")}}
+                        <li class="nav-item">
+                            <a href="/adminhome" class="nav-link">Admin</a>
+                        </li>
+                    {{/if}}
+
+                    {{#if (eq user.profileType "Guest")}}
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link">Log In</a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item">
+                            <a href="/logout" class="nav-link">Log Out</a>
+                        </li>
+                    {{/if}}
+
+                    <li class="nav-item">
+                        <a href="/home" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                    <a href="/gamespage" class="nav-link">Games</a>
+                    </li>
+                    <li class="nav-item search-bar">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
+                        <div class="search-results" id="search-results"></div> 
+                        </div>
+                    </li>
+                    <li class="nav-item profile-picture">
+                        {{#if (neq user.profileType "Guest")}}
+                            <a href="/profile/{{user.username}}">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{else}}
+                            <a href="/profile">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{/if}}
+                    </li>
+                </ul>
+            </nav>
+        </header>
+    <script src="/js/search.js"></script>
+         
+
+        <!-- MAIN CONTENT -->
+
+        <!-- Background + Game Information -->
+        <div class="background-section" style="background-image: url('{{gameBackgroundImage}}');">
+            <div class="game-section">
+                <img src="{{gameCoverImage}}" alt="Game Banner" class="cover">
+                <div class="game-info">
+                    <div class="game-description">
+                        <h1 id="game-title">{{gameTitle}}</h1>
+                        <p><span class="release-label">released on: </span><br> {{gameReleaseDate}} by <span><strong>{{gameDevelopers}}</strong></span></p>
+                        <p>
+                            {{gameDescription}}
+                        </p>
+                    </div>
+                    <nav class="platforms">
+                        <p>released on</p>
+                    {{#each gamePlatforms}}
+                        <span>{{this}}</span>
+                    {{/each}}
+                    </nav>
+                    <nav class="genres">
+                        <p>genres</p>
+                    {{#each gameGenres}}
+                        <span>{{this}}</span>
+                    {{/each}}
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ratings Section -->
+        <main>
+            <div class="ratings-section">
+                <div class="ratings-info">
+                    <h2>Average Rating</h2>
+                    <span class="avg-rating">{{gameRating}}</span>
+                    <span class="avg-stars"> {{#if (eq this.gameRating 5)}}★★★★★{{/if}}
+                    {{#if (eq this.gameRating 4)}}★★★★☆{{/if}}
+                    {{#if (eq this.gameRating 3)}}★★★☆☆{{/if}}
+                    {{#if (eq this.gameRating 2)}}★★☆☆☆{{/if}}
+                    {{#if (eq this.gameRating 1)}}★☆☆☆☆{{/if}}</span>
+                </div>
+
+<div class="ratings-bar">
+    <div class="bar-wrapper">
+        <span class="bar-label">5★</span> 
+        <span class="bar" data-star="5" style="width: 0px;"></span>
+    </div>
+    <div class="bar-wrapper">
+        <span class="bar-label">4★</span> 
+        <span class="bar" data-star="4" style="width: 0px;"></span>
+    </div>
+    <div class="bar-wrapper">
+        <span class="bar-label">3★</span> 
+        <span class="bar" data-star="3" style="width: 0px;"></span>
+    </div>
+    <div class="bar-wrapper">
+        <span class="bar-label">2★</span> 
+        <span class="bar" data-star="2" style="width: 0px;"></span>
+    </div>
+    <div class="bar-wrapper">
+        <span class="bar-label">1★</span> 
+        <span class="bar" data-star="1" style="width: 0px;"></span>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+   
+    const reviews = {{{json reviews}}}; 
+
+    console.log("Reviews data:", reviews); 
+
+    
+    const ratingCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+
+    
+    reviews.forEach(review => {
+        const rating = Number(review.rating);
+        if (ratingCounts.hasOwnProperty(rating)) {
+            ratingCounts[rating]++;
+        }
+    });
+
+    console.log("Rating counts:", ratingCounts); 
+
+   
+    const totalReviews = reviews.length;
+
+    
+    Object.keys(ratingCounts).forEach(star => {
+        const barElement = document.querySelector(`.bar[data-star="${star}"]`);
+        if (barElement) {
+            
+            const percentage = totalReviews > 0 ? (ratingCounts[star] / totalReviews) * 100 : 0;
+            barElement.style.width = `${percentage}px`;
+        }
+    });
+});
+</script>
+            </div>
+    
+            <!-- Reviews Section -->
+            <div class="reviews-section">
+                <h2>Reviews</h2>
+                {{#if (neq user.profileType "Guest")}}
+                    <form action="/add-review/{{gameTitle}}" method="POST">
+                        <div class="add-review-section">
+                            <div class="profile-details">
+                                <a href="/profile">
+                                    <img src="{{user.profilePicture}}" alt="Profile" class="profile-pic">
+                                </a>
+                                <h4>{{user.username}}</h4>  
+                            </div>
+                        </div>
+                        
+                        <div class="add-review">
+                            <textarea name="reviewText" class="add-comment" placeholder="Add Comment..."></textarea>
+
+                            <div class="rating">
+                                <input type="radio" id="star5" name="rating" value="5">
+                                <label for="star5">&#9733;</label>
+
+                                <input type="radio" id="star4" name="rating" value="4">
+                                <label for="star4">&#9733;</label>
+
+                                <input type="radio" id="star3" name="rating" value="3">
+                                <label for="star3">&#9733;</label>
+
+                                <input type="radio" id="star2" name="rating" value="2">
+                                <label for="star2">&#9733;</label>
+
+                                <input type="radio" id="star1" name="rating" value="1">
+                                <label for="star1">&#9733;</label>
+                            </div>
+
+                            <button type="submit" class="add-review-button">Submit Review</button>
+                        </div>
+                    </form>
+                {{else}}
+                    <p>You must be logged in to leave a review.</p>
+                {{/if}}
+
+               <!-- Reviews By Other Users -->
+                <div id="reviews-container">
+                    {{#each reviews}}
+                    <div class="review-card" id="review-card-{{@index}}">
+                        <div class="profile-details">
+                            <a href="/profile/{{this.username}}">
+                                <img src="{{this.profilePicture}}" alt="Profile" class="profile-pic">
+                            </a>
+                            <h4>{{this.username}}</h4> 
+                        </div>
+                        <div class="review-meta">
+                            <h4><span class="stars">
+                                {{#if (eq this.rating 5)}}★★★★★{{/if}}
+                                {{#if (eq this.rating 4)}}★★★★☆{{/if}}
+                                {{#if (eq this.rating 3)}}★★★☆☆{{/if}}
+                                {{#if (eq this.rating 2)}}★★☆☆☆{{/if}}
+                                {{#if (eq this.rating 1)}}★☆☆☆☆{{/if}}
+                            </span>
+                            </h4>
+                            <p><small>{{this.date}}</small></p>
+                        </div>
+                        <p id="review-text-{{@index}}" class="review-text">{{this.reviewText}}</p>
+
+                        <form id="reviewForm-{{@index}}" action="" method="POST" style="display: none;" onsubmit="return confirm('Save changes?');">
+
+                            <textarea name="newReview" id="review-input-{{@index}}" class="bio-input" readonly>{{this.reviewText}}</textarea>
+
+                            <!-- Button Container -->
+                            <div class="bio-buttons">
+                                <button type="submit" id="submit-review-edit-{{@index}}" class="add-review-button">Save</button>
+                                <button type="button" id="cancel-review-edit-{{@index}}" class="add-review-button" onclick="">Cancel</button>
+                            </div>
+                        </form>
+
+                        <div class="review-actions">
+                            <div class="heart-container">
+                                <input type="checkbox" id="heart-{{@index}}" />
+                                <label for="heart-{{@index}}">&#10084;</label>
+                                <span class="like-count" id="like-count-{{@index}}">{{this.likes.length}} Likes</span>
+                            </div>
+                            {{#if (verifyID this.username ../currentlyLoggedInUser)}}
+                            <div class="heart-container">
+                                <input type="button" id="edit-{{@index}}" />  
+                                <label for="edit-{{@index}}">&#9998;</label>
+                            </div>
+
+                            <div class="heart-container">
+                                <input type="button" id="trash-{{@index}}" />  
+                                <label for="trash-{{@index}}">&#128465;</label>
+                            </div>
+
+                            {{/if}}
+
+                            <div class="heart-container">
+                                <input type="button" id="reply-{{@index}}" />  
+                                <label for="reply-{{@index}}">&#128172;</label>
+                                <span class="reply">{{this.repliesCount}}</span>
+                            </div>
+                        </div>
+                        
+                        <!--Comment form-->
+                        <form id="commentForm-{{@index}}" action="" method="POST" style="display: none;" onsubmit="return confirm('Save changes?');">
+
+                            <textarea name="newComment" id="comment-input-{{@index}}" class="bio-input" readonly></textarea>
+
+                            <!-- Button Container -->
+                            <div class="bio-buttons">
+                                <button type="submit" id="submit-comment-{{@index}}" class="add-review-button">Save</button>
+                                <button type="button" id="cancel-comment-{{@index}}" class="add-review-button" onclick="">Cancel</button>
+                            </div>
+                        </form>
+
+                        <div id="comments-container-{{@index}}">
+                            {{#each this.replies}}
+                                <div class="comment-card" id="comment-card-{{@index}}">
+                                    <div class="profile-details">
+                                        <a href="/profile/{{this.username}}">
+                                            <img src="{{this.profilePicture}}" alt="Profile" class="profile-pic">
+                                        </a>
+                                        <h4>{{this.username}}</h4> 
+                                    </div>
+
+                                    <p id="comment-text-{{@index}}" class="review-text">{{this.commentText}}</p>
+                                </div>
+                            {{/each}}
+                        </div>
+                        {{#if (gt this.replies.length 0)}}
+                            <button id="load-more-comments-{{@index}}" class="nav-link">load more comments</button>
+                        {{/if}}
+
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            {{#if (gt reviews.length 0)}}
+                <button id="load-more" class="nav-link">load more reviews</button>
+            {{/if}}
+
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{#if errorMessage}}
+        <script>
+            window.onload = function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: "{{{errorMessage}}}",
+                    confirmButtonColor: '#d33'
+                });
+            };
+        </script>
+    {{/if}}
+
+    {{#if successMessage}}
+        <script>
+            window.onload = function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Review Submitted!',
+                    text: "{{{successMessage}}}",
+                    confirmButtonColor: '#3085d6'
+                });
+            };
+        </script>
+    {{/if}}
+    <script src="/js/reviews.js"></script>
+
+    
+
+    </body>
+</html>

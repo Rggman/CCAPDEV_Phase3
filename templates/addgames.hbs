@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameRevs</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+    <body>
+        <header>
+            <nav class="navbar section-content">
+                <a href="#" class="nav-logo">
+                    <h2 class="logo-text">GameRevs</h2>
+                </a>
+                <ul class="nav-menu">
+                    {{#if (eq user.profileType "Admin")}}
+                        <li class="nav-item">
+                            <a href="/adminhome" class="nav-link">Admin</a>
+                        </li>
+                    {{/if}}
+
+                    {{#if (eq user.profileType "Guest")}}
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link">Log In</a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item">
+                            <a href="/logout" class="nav-link">Log Out</a>
+                        </li>
+                    {{/if}}
+
+                    <li class="nav-item">
+                        <a href="/home" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                    <a href="/gamespage" class="nav-link">Games</a>
+                    </li>
+                    <li class="nav-item search-bar">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
+                        <div class="search-results" id="search-results"></div> 
+                        </div>
+                    </li>
+                    <li class="nav-item profile-picture">
+                        {{#if (neq user.profileType "Guest")}}
+                            <a href="/profile/{{user.username}}">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{else}}
+                            <a href="/profile">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{/if}}
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+            <!-- MAIN CONTENT -->
+
+        <main>
+            <div class="manage-main-container">
+                <form id="gameForm" action="/add-game" method="POST" enctype="multipart/form-data">
+                    <div class="main-container">
+                        <h2>Create Game</h2>
+
+                        <div class="image-preview">
+                            <div class="preview-banner">
+                                <label>Cover Image</label>
+                                <img id="cover-preview" src="{{defaultBanner}}" alt="Cover Image" class="manage-banner">
+                                <p id="cover-filename">No image selected.</p> 
+                                <button type="button" onclick="document.getElementById('cover-input').click()" class="change-banner">Upload Cover</button>
+                                <input type="file" name="coverImage" id="cover-input" style="display: none;" accept="image/*" onchange="updatePreview('cover')">
+                            </div>
+
+                            <div class="preview-background">
+                                <label>Background Image</label>
+                                <img id="background-preview" src="{{defaultBackground}}" alt="Background Preview" class="manage-background">
+                                <p id="background-filename">No image selected.</p> 
+                                <button type="button" onclick="document.getElementById('background-input').click()" class="change-background">Upload Background</button>
+                                <input type="file" name="backgroundImage" id="background-input" style="display: none;" accept="image/*" onchange="updatePreview('background')">
+                            </div>
+                        </div>                    
+                    </div>
+                    <div class="main-container">
+                        <h2>Create Game</h2>
+
+                        <div class="form-container game-title">
+                            <label>Game Title</label>
+                            <input type="text" name="title" value="{{game.title}}" placeholder="Enter game title" required>
+                        </div>
+
+                        <div class="form-container release-date">
+                            <label>Release Date</label>
+                            <input type="date" name="releasedAt" value="{{game.releasedAt}}" required>
+                        </div>
+
+                        <div class="form-container developer">
+                            <label>Developers</label>
+                            <input type="text" name="developers" value="{{game.developers}}" placeholder="Enter game developers" required>
+                        </div>
+
+                        <div class="form-container description">
+                            <label>Description</label>
+                            <textarea name="description" value="{{game.description}}" placeholder="Enter game description..." required></textarea>
+                        </div>
+
+                        <div class="form-container platforms">
+                            <label>Platforms</label>
+                            <div class="checkbox platforms-checkbox">
+                                <label><input type="checkbox" name="platforms[]" value="PC"> PC</label>
+                                <label><input type="checkbox" name="platforms[]" value="PlayStation 5"> PlayStation 5</label>
+                                <label><input type="checkbox" name="platforms[]" value="Xbox Series"> Xbox Series</label>
+                            </div>
+                        </div>
+
+                        <div class="form-container genres">
+                            <label>Genres</label>
+                            <div class="checkbox genres-checkbox">
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Action"> Action</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Adventure"> Adventure</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Arcade"> Arcade</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Card & Board Game"> Card & Board Game</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Fighting"> Fighting</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Indie"> Indie</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="MOBA"> MOBA</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Puzzle"> Puzzle</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Racing"> Racing</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Shooter"> Shooter</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Sport"> Sport</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="Strategy"> Strategy</label>
+                                <label class="genre"><input type="checkbox" name="genres[]" value="RPG"> RPG</label>
+                            </div>
+                        </div>
+
+                        <div class="btn-container">
+                            <button type="submit" class="btn-save">Save</button>
+                            <button type="button" class="btn-cancel" onclick="location.href='/admingame'">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            function updatePreview(type) {
+                const input = document.getElementById(type + '-input');
+                const preview = document.getElementById(type + '-preview');
+                const filenameLabel = document.getElementById(type + '-filename');
+
+                if (input.files && input.files[0]) {
+                    const file = input.files[0];
+                    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+
+                    if (!validImageTypes.includes(file.type)) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Invalid File",
+                            text: "Please upload a valid image file (JPEG, PNG, GIF).",
+                            confirmButtonColor: "#d33"
+                        });
+
+                        input.value = ""; 
+                        preview.src = "";
+                        filenameLabel.textContent = "No image selected."; 
+                        return;
+                    }
+
+                    filenameLabel.textContent = file.name;
+                    preview.src = URL.createObjectURL(file);
+                } else {
+                    
+                    preview.src = "";
+                    filenameLabel.textContent = "No image selected.";
+                }
+            }
+        </script>
+        
+        <script>
+        document.querySelector('form').addEventListener('submit', function (event) {
+            
+            document.querySelectorAll('input[type="hidden"][name="platforms"], input[type="hidden"][name="genres"]').forEach(input => input.remove());
+
+                const coverInput = document.getElementById('cover-input');
+                const backgroundInput = document.getElementById('background-input');
+
+                if (!coverInput.files.length || !backgroundInput.files.length) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Missing Image",
+                        text: "Please upload both a cover and background image before submitting.",
+                        confirmButtonColor: "#f39c12"
+                    });
+                    event.preventDefault();
+                    return;
+                }
+
+            
+            const selectedPlatforms = Array.from(document.querySelectorAll('input[name="platforms[]"]:checked'))
+                .map(checkbox => {
+                    checkbox.disabled = true; 
+                    return checkbox.value;
+                });
+
+            const selectedGenres = Array.from(document.querySelectorAll('input[name="genres[]"]:checked'))
+                .map(checkbox => {
+                    checkbox.disabled = true; 
+                    return checkbox.value;
+                });
+
+           
+            selectedPlatforms.forEach(platform => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'platforms'; 
+                input.value = platform;
+                this.appendChild(input);
+            });
+
+            selectedGenres.forEach(genre => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'genres'; 
+                input.value = genre;
+                this.appendChild(input);
+            });
+
+            
+        });
+        </script>
+
+    <script src="/js/search.js"></script>
+    
+    </body>
+</html>
