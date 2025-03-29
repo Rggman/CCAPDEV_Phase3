@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameRevs</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+    <body>
+        <header>
+            <nav class="navbar section-content">
+                <a href="#" class="nav-logo">
+                    <h2 class="logo-text">GameRevs</h2>
+                </a>
+                <ul class="nav-menu">
+                    {{#if (eq user.profileType "Admin")}}
+                        <li class="nav-item">
+                            <a href="/adminhome" class="nav-link">Admin</a>
+                        </li>
+                    {{/if}}
+
+                    {{#if (eq user.profileType "Guest")}}
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link">Log In</a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item">
+                            <a href="/logout" class="nav-link">Log Out</a>
+                        </li>
+                    {{/if}}
+
+                    <li class="nav-item">
+                        <a href="/home" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                    <a href="/gamespage" class="nav-link">Games</a>
+                    </li>
+                    <li class="nav-item search-bar">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
+                        <div class="search-results" id="search-results"></div> 
+                        </div>
+                    </li>
+                    <li class="nav-item profile-picture">
+                        {{#if (neq user.profileType "Guest")}}
+                            <a href="/profile/{{user.username}}">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{else}}
+                            <a href="/profile">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{/if}}
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <script src="/js/search.js"></script>
+        <!-- Sorting Dropdown  -->
+        <div class="gamespage-dropdown">
+            <select id="sortSelect">
+                <option value="name-asc">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="rating-asc">Rating (Low to High)</option>
+                <option value="rating-desc">Rating (High to Low)</option>
+                <option value="releaseDate-asc">Release Date (Oldest First)</option>
+                <option value="releaseDate-desc">Release Date (Newest First)</option>
+            </select>
+        </div>
+
+
+        <div class="content">
+            <!-- Pagination Controls -->
+            <div class="pages-buttons">
+                {{#if (gt currentPage 1)}}
+                    <a href="/gamespage?page={{subtract currentPage 1}}" class="page-button">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </a>
+                {{/if}}
+
+                {{#each (range 1 totalPages)}}
+                    <a href="/gamespage?page={{this}}" class="page-button" {{#if (eq this ../currentPage)}}active{{/if}}>
+                        {{this}}
+                    </a>
+                {{/each}}
+
+                {{#if (lt currentPage totalPages)}}
+                    <a href="/gamespage?page={{add currentPage 1}}" class="page-button">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </a>
+                {{/if}}
+            </div>
+
+            <!-- Games Grid -->    
+            <div class="gallery-container">
+                {{#if games.length}}
+                    {{#each games}}
+                        <div class="gallery" 
+                            data-title="{{this.title}}"
+                            data-release="{{this.releasedAt}}" 
+                            data-rating="{{this.rating}}" 
+                            data-creation="{{this.createdAt}}">
+                            <a href="/review/{{this.title}}">
+                                <img src="{{this.coverImage}}" alt="{{this.title}} Banner" class="gallery-cover">
+                                <p class="title-text">{{this.title}}</p>
+                            </a>
+                            <span class="stars">
+                                {{#if (eq this.rating 5)}}★★★★★{{/if}}
+                                {{#if (eq this.rating 4)}}★★★★☆{{/if}}
+                                {{#if (eq this.rating 3)}}★★★☆☆{{/if}}
+                                {{#if (eq this.rating 2)}}★★☆☆☆{{/if}}
+                                {{#if (eq this.rating 1)}}★☆☆☆☆{{/if}}
+                            </span>
+                        </div>
+                    {{/each}}
+                {{else}}
+                    <p>No games yet!</p>
+                {{/if}}
+            </div>
+            
+        </div>
+
+        <script src="/js/search.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const sortSelect = document.getElementById("sortSelect");
+                const gameList = document.querySelector(".gallery-container");
+
+                function sortGames(sortBy) {
+                    let games = Array.from(document.querySelectorAll(".gallery"));
+
+                    games.sort((a, b) => {
+                        let titleA = a.dataset.title ? a.dataset.title.toLowerCase() : "";
+                        let titleB = b.dataset.title ? b.dataset.title.toLowerCase() : "";
+                        let releaseA = a.dataset.release ? new Date(a.dataset.release) : new Date(0);
+                        let releaseB = b.dataset.release ? new Date(b.dataset.release) : new Date(0);
+                        let ratingA = a.dataset.rating ? parseFloat(a.dataset.rating) : 0;
+                        let ratingB = b.dataset.rating ? parseFloat(b.dataset.rating) : 0;
+
+                        switch (sortBy) {
+                            case "name-asc":
+                                return titleA.localeCompare(titleB);
+                            case "name-desc":
+                                return titleB.localeCompare(titleA);
+                            case "releaseDate-asc":
+                                return releaseA - releaseB;
+                            case "releaseDate-desc":
+                                return releaseB - releaseA;
+                            case "rating-asc":
+                                return ratingA - ratingB;
+                            case "rating-desc":
+                                return ratingB - ratingA;
+                            default:
+                                return 0;
+                        }
+                    });
+
+                    
+                    gameList.innerHTML = "";
+                    games.forEach(game => gameList.appendChild(game));
+                }
+
+                
+                sortGames("name-asc");
+
+                
+                sortSelect.value = "name-asc";
+
+                
+                sortSelect.addEventListener("change", function () {
+                    sortGames(sortSelect.value);
+                });
+            });
+        </script>
+
+    </body>
+</html> 

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GameRevs</title>   
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    </head>
+
+    <body>
+        <!-- Header (Navigation Menu) -->
+        <header>
+            <nav class="navbar section-content">
+                <a href="#" class="nav-logo">
+                    <h2 class="logo-text">GameRevs</h2>
+                </a>
+                <ul class="nav-menu">
+                    {{#if (eq user.profileType "Admin")}}
+                        <li class="nav-item">
+                            <a href="/adminhome" class="nav-link">Admin</a>
+                        </li>
+                    {{/if}}
+
+                    {{#if (eq user.profileType "Guest")}}
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link">Log In</a>
+                        </li>
+                    {{else}}
+                        <li class="nav-item">
+                            <a href="/logout" class="nav-link">Log Out</a>
+                        </li>
+                    {{/if}}
+
+                    <li class="nav-item">
+                        <a href="/home" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                    <a href="/gamespage" class="nav-link">Games</a>
+                    </li>
+                    <li class="nav-item search-bar">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
+                        <div class="search-results" id="search-results"></div> 
+                        </div>
+                    </li>
+                    <li class="nav-item profile-picture">
+                        {{#if (neq user.profileType "Guest")}}
+                            <a href="/profile/{{user.username}}">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{else}}
+                            <a href="/profile">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{/if}}
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="admin-container">
+            <aside class="aside-admin">
+                <h2>Admin Panel</h2>
+                <ul class="nav-admin">
+                    <li class="admin-item">
+                        <a href="/adminhome">Home</a>
+                    </li>
+                    <li class="admin-item">
+                        <a href="/admingame">Manage Games</a>
+                    </li>
+                    <li class="admin-item">
+                        <a href="/adminuser">Manage Users</a>
+                    </li>
+                </ul>
+            </aside>
+
+            <main class="main-admin">
+                <div class="admin-headers">
+                    <h2>Manage Games</h2>
+                </div>
+                <div class="sub-header">
+                    <div class="total">
+                        Total Games: {{#if games.length}} 
+                                    <span>{{games.length}}</span> 
+                                    {{else}} 
+                                        <span>0</span> 
+                                    {{/if}}
+                    </div>
+                    <button class="add-game-button" onclick="location.href='/addgames'">
+                        <i class="fas fa-plus"></i> Add Game
+                    </button>
+                </div>
+
+
+                <div class="sort-admin">
+                    <p>sort by: </p>
+                    <div class="dropdown">
+                        <select>
+                            <option>Creation Date (Ascending)</option>
+                            <option>Creation Date (Descending)</option>
+                            <option>Release Date (Ascending)</option>
+                            <option>Release Date (Descending)</option>
+                            <option>Rating (Ascending)</option>
+                            <option>Rating (Descending)</option>
+                            <option>A-Z</option>
+                            <option>Z-A</option>
+                        </select>
+                    </div>
+
+                    <div class="search-comment-container">
+                        <input type="text" placeholder="Search Games..." class="search-comment">
+                        <button class="search-comment-button">
+                            <i class="fas fa-search"></i> 
+                        </button>
+                    </div>
+                </div>
+
+                <div class="game-list">
+                    {{#if games.length}}
+                        {{#each games}}
+                            <div class="game-item" data-release="{{this.releasedAt}}" data-rating="{{this.rating}}" data-creation="{{this.createdAt}}">
+                                <a href="/managegames/{{this.title}}" class="nav-image">
+                                    <img src="{{this.coverImage}}" alt="Game Banner">
+                                </a>
+                                <div>
+                                    <a href="/managegames/{{this.title}}" class="nav-label">
+                                        <h3>{{this.title}}</h3>
+                                    </a>
+                                    <p>{{this.developers}}</p>
+                                </div>
+                            </div>
+                        {{/each}}
+                    {{else}}
+                        <p>No games yet!</p>
+                    {{/if}}
+                </div>
+            </main>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const sortSelect = document.querySelector(".dropdown select");
+                const gameList = document.querySelector(".game-list");
+
+                sortSelect.addEventListener("change", function () {
+                    let games = Array.from(document.querySelectorAll(".game-item"));
+                    let sortBy = sortSelect.value;
+
+                    games.sort((a, b) => {
+                        let titleA = a.querySelector(".nav-label h3").textContent.toLowerCase();
+                        let titleB = b.querySelector(".nav-label h3").textContent.toLowerCase();
+                        let creationA = new Date(a.dataset.creation);
+                        let creationB = new Date(b.dataset.creation);
+                        let releaseA = new Date(a.dataset.release);
+                        let releaseB = new Date(b.dataset.release);
+                        let ratingA = parseFloat(a.dataset.rating);
+                        let ratingB = parseFloat(b.dataset.rating);
+
+                        switch (sortBy) {
+                            case "Creation Date (Ascending)":
+                                return creationA - creationB;
+                            case "Creation Date (Descending)":
+                                return creationB - creationA;
+                            case "Release Date (Ascending)":
+                                return releaseA - releaseB;
+                            case "Release Date (Descending)":
+                                return releaseB - releaseA;
+                            case "Rating (Ascending)":
+                                return ratingB - ratingA;
+                            case "Rating (Descending)":
+                                return ratingB - ratingA;
+                            case "A-Z":
+                                return titleA.localeCompare(titleB);
+                            case "Z-A":
+                                return titleB.localeCompare(titleA);
+                            default:
+                                return 0;
+                        }
+                    });
+
+                    gameList.innerHTML = "";
+                    games.forEach(game => gameList.appendChild(game));
+                });
+            });
+        </script>
+        <script>
+            document.querySelector(".search-comment").addEventListener("input", function () {
+                let searchQuery = this.value.toLowerCase();
+                let games = document.querySelectorAll(".game-item");
+
+                games.forEach(game => {
+                    let title = game.querySelector(".nav-label h3").textContent.toLowerCase();
+                    if (title.includes(searchQuery)) {
+                        game.style.display = "flex"; 
+                    } else {
+                        game.style.display = "none"; 
+                    }
+                });
+            });
+        </script>
+
+        <script src="/js/search.js"></script>
+        
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        {{#if errorMessage}}
+            <script>
+                window.onload = function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: "{{{errorMessage}}}",
+                        confirmButtonColor: '#d33'
+                    });
+                };
+            </script>
+        {{/if}}
+
+        {{#if successMessage}}
+            <script>
+                window.onload = function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Manage Game Successful!',
+                        text: "{{{successMessage}}}",
+                        confirmButtonColor: '#3085d6'
+                    });
+                };
+            </script>
+        {{/if}}
+
+    </body>
+</html>
