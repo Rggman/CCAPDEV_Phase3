@@ -167,15 +167,28 @@ img.profile-picture {
     aspect-ratio: 1 / 1;
 }
 
+.burger-menu{
+    color: var(--white-color);
+    display: none;
+}
+
 @media screen and (max-width: 768px) {
 
-    .nav-menu {
-        align-items: center;
-        flex-direction: column;
-        text-align: center; 
-        align-items: center;
-        
+    .burger-menu {
+        display: flex;
     }
+        
+    .navbar .nav-menu {
+        display: none;
+    }
+    
+    .navbar .nav-menu.active {
+        display: flex; 
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+
 }
 
 /* Background Section */
@@ -271,6 +284,13 @@ img.profile-picture {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+
+    .section-content{
+        display: flex; 
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
     .description-item {
         flex-direction: column;
         text-align: center; 
@@ -280,6 +300,7 @@ img.profile-picture {
     .description-item.reversed {
         flex-direction: column;
         text-align: center; 
+        align-items: center;
         
     }
 
@@ -295,8 +316,10 @@ img.profile-picture {
 
 
     .description-text p {
-        font-size: 1rem; 
+        font-size: 0.5rem; 
     }
+
+    
 }
 
 
