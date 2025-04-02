@@ -684,8 +684,6 @@ app.post("/edit-review/:title/:reviewId/:text", async (req, res) => {
 app.get("/profile", async (req, res) => {
     res.redirect("/login");
 });
-
-// PROFILE.HBS //
 app.get("/profile/:username", async (req, res) => {
     try {
         const username = req.params.username; // user to check
@@ -698,13 +696,20 @@ app.get("/profile/:username", async (req, res) => {
             return res.status(404).render("error", { message: "User not found" });
         }
 
-        // Fetch user reviews
+        // Get sorting parameters from query string, default to sorting by creation date
         const sortBy = req.query.sortBy || 'createdAt'; // Default sorting by createdAt (time)
         const order = req.query.order === 'desc' ? -1 : 1; // Default ascending order
 
-        const reviews = await Review.find({ userId: user._id })
+        // Fetch user reviews
+        let reviews = await Review.find({ userId: user._id })
             .populate("userId", "username profilePicture")
-            .sort({ [sortBy]: order }); // Sort reviews based on time
+            .sort({ [sortBy]: order }); // Initial sorting from database
+
+        // Convert createdAt to ISO string for front-end JavaScript parsing
+        reviews = reviews.map(review => ({
+            ...review.toObject(),
+            createdAtISO: review.createdAt.toISOString(), // Format createdAt for client-side sorting
+        }));
 
         // Extract game titles from reviews
         const gameTitles = reviews.map(review => review.gameTitle);
@@ -713,7 +718,7 @@ app.get("/profile/:username", async (req, res) => {
         const games = await Game.find({ title: { $in: gameTitles } });
 
         res.render("profile", { 
-            sessionUser: sessionUser,
+            sessionUser,
             profileUser: user,
             reviews,
             games,

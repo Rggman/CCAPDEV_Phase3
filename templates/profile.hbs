@@ -1,213 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameRevs</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-</head>
-<body>
-    <header>
-        <nav class="navbar section-content">
-            <a href="#" class="nav-logo">
-                <h2 class="logo-text">GameRevs</h2>
-            </a>
-            <button class="burger-menu" id="burger-menu">
-                <i class="fas fa-bars"></i>  
-            </button>
-            <ul class="nav-menu" id="nav-menu">
-                {{#if (eq user.profileType "Admin")}}
-                    <li class="nav-item">
-                        <a href="/adminhome" class="nav-link">Admin</a>
-                    </li>
-                {{/if}}
-                
-                {{#if (eq user.profileType "Guest")}}
-                    <li class="nav-item">
-                        <a href="/login" class="nav-link">Log In</a>
-                    </li>
-                {{else}}
-                    <li class="nav-item">
-                        <a href="/logout" class="nav-link">Log Out</a>
-                    </li>
-                {{/if}}
-                
-                <li class="nav-item">
-                    <a href="/home" class="nav-link">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a href="/gamespage" class="nav-link">Games</a>
-                </li>
-                <li class="nav-item search-bar">
-                    <div class="search-container">
-                        <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
-                        <div class="search-results" id="search-results"></div> 
-                    </div>
-                </li>
-                <li class="nav-item profile-picture">
-                    {{#if (neq user.profileType "Guest")}}
-                        <a href="/profile/{{user.username}}">
-                            <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
-                        </a>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GameRevs</title>
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    </head>
+    <body>
+        <header>
+            <nav class="navbar section-content">
+                <a href="#" class="nav-logo">
+                    <h2 class="logo-text">GameRevs</h2>
+                </a>
+                <button class="burger-menu" id="burger-menu">
+                    <i class="fas fa-bars"></i>  
+                </button>
+                <ul class="nav-menu" id="nav-menu">
+                    {{#if (eq user.profileType "Admin")}}
+                        <li class="nav-item">
+                            <a href="/adminhome" class="nav-link">Admin</a>
+                        </li>
+                    {{/if}}
+
+                    {{#if (eq user.profileType "Guest")}}
+                        <li class="nav-item">
+                            <a href="/login" class="nav-link">Log In</a>
+                        </li>
                     {{else}}
-                        <a href="/profile">
-                            <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
-                        </a>
+                        <li class="nav-item">
+                            <a href="/logout" class="nav-link">Log Out</a>
+                        </li>
                     {{/if}}
-                </li>
-            </ul>
-        </nav>
-    </header>
-    <script>
-        document.getElementById("burger-menu").addEventListener("click", function() {
-            document.getElementById("nav-menu").classList.toggle("active");
-        });
-    </script>
-    <div class="content">
-        <div class="container">
-            <!-- Profile Image Form -->
-            <form id="profile-picture-form" action="/update-profile-picture" method="POST" enctype="multipart/form-data">
-                <!-- Profile image -->
-                <img src="{{profileUser.profilePicture}}" class="profile-img" id="profile-img-preview">
 
-                <!-- Hidden File Input -->
-                <input type="file" id="profile-img-input" name="profilePicture" style="display: none;" accept="image/*">
-
-                <!-- Submit Button (Hidden) -->
-                <button type="submit" id="upload-btn" style="display: none;">Upload</button>
-            </form>
-
-            <!-- Profile Details -->
-            <div class="profile-details-container">
-                <p class="profile-name">{{profileUser.username}}</p>
-
-                <!-- Bio Section -->
-                <p class="profile-bio" id="bio-text">{{profileUser.profileBio}}</p>
-
-                <!-- Bio Edit Form (Initially Hidden) -->
-                <form id="bio-form" action="/updatebio" method="POST" style="display: none;" onsubmit="return confirm('Save changes?');">
-
-                <textarea name="newBio" id="bio-input" class="bio-input" readonly>{{profileUser.profileBio}}</textarea>
-
-                <!-- Button Container -->
-                <div class="bio-buttons">
-                    <button type="submit" class="profile-button">Save</button>
-                    <button type="button" id="cancel-bio-btn" class="profile-button" onclick="cancelEdit()">Cancel</button>
-                </div>
-                </form>
-                <!-- Profile Buttons -->
-                {{#if (neq sessionUser.profileType "Guest")}}
-                    {{#if (eqAString profileUser._id sessionUser._id)}}
-                        <div class="pages-buttons">
-                            <button id="edit-bio-btn" class="profile-button" onclick="editBio()">Edit Bio</button>
-                            <button id="change-photo-btn" class="profile-button" onclick="document.getElementById('profile-img-input').click();">Change Photo</button>
-                            <form action="/logout" method="GET">
-                                <button type="submit" class="profile-button">Log out</button>
-                            </form>
+                    <li class="nav-item">
+                        <a href="/home" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/gamespage" class="nav-link">Games</a>
+                    </li>
+                    <li class="nav-item search-bar">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
+                            <div class="search-results" id="search-results"></div> 
                         </div>
-                    {{/if}}
-                {{/if}}
-            </div>
-        </div>
+                    </li>
+                    <li class="nav-item profile-picture">
+                        {{#if (neq user.profileType "Guest")}}
+                            <a href="/profile/{{user.username}}">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{else}}
+                            <a href="/profile">
+                                <img src="{{user.profilePicture}}" alt="Profile" class="profile-picture" id="header-profile-img-preview">
+                            </a>
+                        {{/if}}
+                    </li>
+                </ul>
+            </nav>
+        </header>
 
-        <!-- Dropdown for Sorting Reviews -->
-        <div class="container">
-            <div class="section-header">
-                <p class="section-header">Recent Reviews</p>
-            </div>
+        <script>
+            document.getElementById("burger-menu").addEventListener("click", function() {
+                document.getElementById("nav-menu").classList.toggle("active");
+            });
+        </script>
 
-            <div class="sort-reviews">
-                <label for="sort-reviews-dropdown">Sort Reviews By:</label>
-                <select id="sort-reviews-dropdown" onchange="sortReviews(event)">
-                    <option value="time">Time</option>
-                    <option value="title">Game Title</option>
-                </select>
-            </div>
 
-            <!-- Recent Comments -->
-            {{#each reviews}}
-            <div class="review-card">
-                <div class="profile-details">
-                    <a href="/profile/{{this.userId.username}}">
-                        <img src="{{this.userId.profilePicture}}" alt="Profile" class="profile-pic" id="review-profile-img-preview">
-                    </a>
-                    <h4>{{this.userId.username}} --------------- {{this.gameTitle}}</h4> 
-                </div>
-                <div class="review-meta">
-                    <h4>
-                        <span class="stars">
-                            {{#if (eq this.rating 5)}}★★★★★{{/if}}
-                            {{#if (eq this.rating 4)}}★★★★☆{{/if}}
-                            {{#if (eq this.rating 3)}}★★★☆☆{{/if}}
-                            {{#if (eq this.rating 2)}}★★☆☆☆{{/if}}
-                            {{#if (eq this.rating 1)}}★☆☆☆☆{{/if}}
-                        </span>
-                    </h4>
-                    <p><small>{{this.createdAt}}</small></p> 
-                </div>
-                <p class="review-text">{{this.reviewText}}</p>
-                <div class="review-actions">
-                    <div class="heart-container">
-                        <input type="checkbox" id="heart-{{@index}}" />
-                        <label for="heart-{{@index}}">&#10084;</label>
-                        <span class="like-count">{{this.likes.length}} Likes</span>
+        <div class="content">
+            <div class="container">
+                <!-- Profile Image Form -->
+                <form id="profile-picture-form" action="/update-profile-picture" method="POST" enctype="multipart/form-data">
+                    <!-- Profile image -->
+                    <img src="{{profileUser.profilePicture}}" class="profile-img" id="profile-img-preview">
+
+                    <!-- Hidden File Input -->
+                    <input type="file" id="profile-img-input" name="profilePicture" style="display: none;" accept="image/*">
+
+                    <!-- Submit Button (Hidden) -->
+                    <button type="submit" id="upload-btn" style="display: none;">Upload</button>
+                </form>
+
+                <!-- Profile Details -->
+                <div class="profile-details-container">
+                    <p class="profile-name">{{profileUser.username}}</p>
+
+                    <!-- Bio Section -->
+                    <p class="profile-bio" id="bio-text">{{profileUser.profileBio}}</p>
+
+                    <!-- Bio Edit Form (Initially Hidden) -->
+                    <form id="bio-form" action="/updatebio" method="POST" style="display: none;" onsubmit="return confirm('Save changes?');">
+
+                    <textarea name="newBio" id="bio-input" class="bio-input" readonly>{{profileUser.profileBio}}</textarea>
+
+                    <!-- Button Container -->
+                    <div class="bio-buttons">
+                        <button type="submit" class="profile-button">Save</button>
+                        <button type="button" id="cancel-bio-btn" class="profile-button" onclick="cancelEdit()">Cancel</button>
                     </div>
-                    <span class="reply">💬 {{this.comments.length}}</span>
+                    </form>
+                    <!-- Profile Buttons -->
+                    {{#if (neq sessionUser.profileType "Guest")}}
+                        {{#if (eqAString profileUser._id sessionUser._id)}}
+                            <div class="pages-buttons">
+                                <button id="edit-bio-btn" class="profile-button" onclick="editBio()">Edit Bio</button>
+                                <button id="change-photo-btn" class="profile-button" onclick="document.getElementById('profile-img-input').click();">Change Photo</button>
+                                <form action="/logout" method="GET">
+                                    <button type="submit" class="profile-button">Log out</button>
+                                </form>
+                            </div>
+                        {{/if}}
+                    {{/if}}
                 </div>
             </div>
-            {{/each}}
+<!-- Recent Reviews -->
+<div class="container">
+    <div class="section-header">
+        <p class="section-header">Recent Reviews</p>
 
-            {{#unless reviews.length}}
-            <p class="no-reviews">No reviews yet. Start by adding one!</p>
-            {{/unless}}
+        <!-- Sorting Dropdown -->
+        <div class="sort-dropdown">
+            <label for="sortReviews">Sort by:</label>
+            <select id="sortReviews" name="sortReviews" onchange="sortReviews()">
+                <option value="createdAt-desc">Newest</option>
+                <option value="createdAt-asc">Oldest</option>
+                <option value="rating-desc">Highest Rating</option>
+                <option value="rating-asc">Lowest Rating</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Display Reviews -->
+    <div id="reviews-list">
+        {{#each reviews}}
+        <div class="review-card" 
+            data-createdat="{{this.createdAt}}" 
+            data-rating="{{this.rating}}">
+            
+            <div class="profile-details">
+                <a href="/profile/{{this.userId.username}}">
+                    <img src="{{this.userId.profilePicture}}" alt="Profile" class="profile-pic" id="review-profile-img-preview">
+                </a>
+                <h4>{{this.userId.username}} --------------- {{this.gameTitle}}</h4> 
+            </div>
+
+            <div class="review-meta">
+                <h4>
+                    <span class="stars">
+                        {{#if (eq this.rating 5)}}★★★★★{{/if}}
+                        {{#if (eq this.rating 4)}}★★★★☆{{/if}}
+                        {{#if (eq this.rating 3)}}★★★☆☆{{/if}}
+                        {{#if (eq this.rating 2)}}★★☆☆☆{{/if}}
+                        {{#if (eq this.rating 1)}}★☆☆☆☆{{/if}}
+                    </span>
+                </h4>
+                <p><small>{{this.createdAt}}</small></p> 
+            </div>
+
+            <p class="review-text">{{this.reviewText}}</p>
+
+            <div class="review-actions">
+                <div class="heart-container">
+                    <input type="checkbox" id="heart-{{@index}}" />
+                    <label for="heart-{{@index}}">&#10084;</label>
+                    <span class="like-count">{{this.likes.length}} Likes</span>
+                </div>
+                <span class="reply">💬 {{this.comments.length}}</span>
+            </div>
+
+        </div>
+        {{/each}}
+    </div>
+
+    {{#unless reviews.length}}
+    <p class="no-reviews">No reviews yet. Start by adding one!</p>
+    {{/unless}}
+</div>
+
+<!-- JavaScript for Sorting -->
+<script>
+    function sortReviews() {
+        const sortOption = document.getElementById("sortReviews").value;
+        const reviewsList = document.getElementById("reviews-list");
+        let reviews = Array.from(reviewsList.getElementsByClassName("review-card"));
+
+        reviews.sort((a, b) => {
+            let createdAtA = new Date(a.dataset.createdat);
+            let createdAtB = new Date(b.dataset.createdat);
+            let ratingA = parseFloat(a.dataset.rating);
+            let ratingB = parseFloat(b.dataset.rating);
+
+            switch (sortOption) {
+                case "createdAt-asc":
+                    return createdAtA - createdAtB;
+                case "createdAt-desc":
+                    return createdAtB - createdAtA;
+                case "rating-asc":
+                    return ratingA - ratingB;
+                case "rating-desc":
+                    return ratingB - ratingA;
+                default:
+                    return 0;
+            }
+        });
+
+        // Clear and re-add sorted reviews
+        reviewsList.innerHTML = "";
+        reviews.forEach(review => reviewsList.appendChild(review));
+    }
+</script>
+
+            <!-- Recent Games Section -->
+            <div class="container">
+                <div class="section-header">
+                    <p class="section-header">Recent Games Reviewed</p>
+                </div>
+                <div class="gallery-profile-container">
+                    {{#each games}}
+                        <div class="gallery" 
+                            data-title="{{this.title}}"
+                            data-release="{{this.releasedAt}}" 
+                            data-rating="{{this.rating}}" 
+                            data-creation="{{this.createdAt}}">
+                            <a href="/review/{{this.title}}">
+                                <img src="{{this.coverImage}}" alt="{{this.title}} Banner" class="gallery-cover">
+                                <p class="title-text">{{this.title}}</p>
+                            </a>
+                        </div>
+                    {{/each}}
+
+                    {{#unless reviews.length}}
+                    <p class="no-reviews">No reviews yet. Start by adding one!</p>
+                    {{/unless}}
+                </div>
+            </div>
         </div>
 
         <script>
-            function sortReviews(event) {
-                const sortCriteria = event.target.value;
-                let sortedReviews = [...reviews]; // Clone the reviews array
+            document.getElementById("profile-img-input").addEventListener("change", function(event) {
+                const file = event.target.files[0];
+                const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
 
-                if (sortCriteria === 'time') {
-                    sortedReviews.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by time
-                } else if (sortCriteria === 'title') {
-                    sortedReviews.sort((a, b) => a.gameTitle.localeCompare(b.gameTitle)); // Sort by game title
+                if (file) {
+                    if (!validImageTypes.includes(file.type)) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Invalid File",
+                            text: "Please upload a valid image file (JPEG, PNG, GIF).",
+                            confirmButtonColor: "#d33"
+                        });
+
+                        event.target.value = ""; 
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById("profile-img-preview").src = e.target.result;
+                        document.getElementById("header-profile-img-preview").src = e.target.result;
+                        document.querySelectorAll(".profile-pic").forEach(img => {
+                            img.src = e.target.result;
+                        });
+                    };
+                    reader.readAsDataURL(file);
+
+                    uploadProfileImage(file);
                 }
+            });
 
-                // Now re-render the reviews
-                const reviewsContainer = document.querySelector('.content .container');
-                reviewsContainer.innerHTML = ''; // Clear current reviews
-                sortedReviews.forEach(review => {
-                    const reviewCard = document.createElement('div');
-                    reviewCard.classList.add('review-card');
-                    reviewCard.innerHTML = `
-                        <div class="profile-details">
-                            <a href="/profile/${review.userId.username}">
-                                <img src="${review.userId.profilePicture}" alt="Profile" class="profile-pic" id="review-profile-img-preview">
-                            </a>
-                            <h4>${review.userId.username} --------------- ${review.gameTitle}</h4>
-                        </div>
-                        <div class="review-meta">
-                            <h4>
-                                <span class="stars">${'★'.repeat(review.rating)}</span>
-                            </h4>
-                            <p><small>${review.createdAt}</small></p> 
-                        </div>
-                        <p class="review-text">${review.reviewText}</p>
-                        <div class="review-actions">
-                            <div class="heart-container">
-                                <input type="checkbox" id="heart-${review.id}" />
-                                <label for="heart-${review.id}">&#10084;</label>
-                                <span class="like-count">${review.likes.length} Likes</span>
-                            </div>
-                            <span class="reply">💬 ${review.comments.length}</span>
-                        </div>
-                    `;
-                    reviewsContainer.appendChild(reviewCard);
-                });
+            function uploadProfileImage(file) {
+                const formData = new FormData();
+                formData.append("profilePicture", file);
+                fetch("/update-profile-picture", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Profile picture updated successfully!");
+                        location.reload();
+                    } else {
+                        alert("Error updating profile picture.");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
             }
         </script>
 
-    </div>
-</body>
+        <script>
+            function editBio() {
+                document.getElementById("bio-text").style.display = "none"; 
+                document.getElementById("bio-input").removeAttribute("readonly"); 
+                document.getElementById("bio-form").style.display = "block"; 
+                document.getElementById("edit-bio-btn").style.display = "none"; 
+            }
+
+            function cancelEdit() {
+                document.getElementById("bio-text").style.display = "block"; 
+                document.getElementById("bio-input").setAttribute("readonly", true); 
+                document.getElementById("bio-form").style.display = "none";
+                document.getElementById("edit-bio-btn").style.display = "block"; 
+            }
+        </script>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const searchInput = document.querySelector(".search-input");
+                const searchResults = document.querySelector(".search-results");
+
+                if (!searchInput || !searchResults) {
+                    console.error("Search input or results container not found.");
+                    return;
+                }
+
+                let lastQuery = "";
+
+                searchInput.addEventListener("input", async () => {
+                    const query = searchInput.value.trim();
+                    if (!query || query === lastQuery) {
+                        searchResults.style.display = "none"; 
+                        return;
+                    }
+                    lastQuery = query;
+
+                    try {
+                        const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+                        const users = await response.json();
+
+                        searchResults.innerHTML = "";
+                        if (users.length > 0) {
+                            users.slice(0, 5).forEach(user => {
+                                const profilePicture = user.profilePicture || "/default-avatar.png"; 
+                                const userItem = document.createElement("div");
+                                userItem.classList.add("search-result-item");
+                                userItem.innerHTML = `
+                                    <a href="/profile/${user.username}" class="search-result-link">
+                                        <img src="${profilePicture}" alt="${user.username}" class="search-result-img">
+                                        <span>${user.username}</span>
+                                    </a>
+                                `;
+                                searchResults.appendChild(userItem);
+                            });
+                            searchResults.style.display = "block"; 
+                        } else {
+                            searchResults.style.display = "none"; 
+                        }
+                    } catch (error) {
+                        console.error("Error fetching search results:", error);
+                    }
+                });
+
+                // Hide search results when clicking outside
+                document.addEventListener("click", (event) => {
+                    if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+                        searchResults.style.display = "none";
+                    }
+                });
+
+                // Hide search results on scroll
+                window.addEventListener("scroll", () => {
+                    searchResults.style.display = "none";
+                });
+
+                // Show search results again when clicking on the search bar
+                searchInput.addEventListener("focus", () => {
+                    if (searchInput.value.trim()) {
+                        searchResults.style.display = "block";
+                    }
+                });
+            });
+        </script>
+
+        <script src="/js/search.js"></script>
+
+    </body>
 </html>
