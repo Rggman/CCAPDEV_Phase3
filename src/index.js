@@ -688,30 +688,37 @@ app.get("/profile", async (req, res) => {
 // PROFILE.HBS //
 app.get("/profile/:username", async (req, res) => {
     try {
-        const username = req.params.username; 
-        const sessionUser = req.session.user; 
+        const username = req.params.username; // user to check
+        const sessionUser = req.session.user; // The logged-in user from session
 
-        
+        // Find the user by username
         const user = await User.findOne({ username });
 
         if (!user) {
             return res.status(404).render("error", { message: "User not found" });
         }
 
-        
-        const reviews = await Review.find({ userId: user._id }).populate("userId", "username profilePicture");
+        // Fetch user reviews
+        const sortBy = req.query.sortBy || 'createdAt'; // Default sorting by createdAt (time)
+        const order = req.query.order === 'desc' ? -1 : 1; // Default ascending order
 
-       
+        const reviews = await Review.find({ userId: user._id })
+            .populate("userId", "username profilePicture")
+            .sort({ [sortBy]: order }); // Sort reviews based on time
+
+        // Extract game titles from reviews
         const gameTitles = reviews.map(review => review.gameTitle);
 
-        
+        // Fetch game details based on titles
         const games = await Game.find({ title: { $in: gameTitles } });
 
         res.render("profile", { 
             sessionUser: sessionUser,
             profileUser: user,
             reviews,
-            games
+            games,
+            sortBy, // Pass the sorting method
+            order
         });
 
     } catch (err) {
@@ -719,6 +726,7 @@ app.get("/profile/:username", async (req, res) => {
         res.status(500).render("error", { message: "Server error" });
     }
 });
+
 
 // updating user bio
 app.post("/updatebio", async (req, res) => {
