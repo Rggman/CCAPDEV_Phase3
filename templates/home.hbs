@@ -7,19 +7,22 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
-<body>
-    <header>
+    <body>
+        <header>
             <nav class="navbar section-content">
                 <a href="#" class="nav-logo">
                     <h2 class="logo-text">GameRevs</h2>
                 </a>
-                <ul class="nav-menu">
+                <button class="burger-menu" id="burger-menu">
+                    <i class="fas fa-bars"></i>  
+                </button>
+                <ul class="nav-menu" id="nav-menu">
                     {{#if (eq user.profileType "Admin")}}
                         <li class="nav-item">
                             <a href="/adminhome" class="nav-link">Admin</a>
                         </li>
                     {{/if}}
-
+                    
                     {{#if (eq user.profileType "Guest")}}
                         <li class="nav-item">
                             <a href="/login" class="nav-link">Log In</a>
@@ -29,17 +32,17 @@
                             <a href="/logout" class="nav-link">Log Out</a>
                         </li>
                     {{/if}}
-
+                    
                     <li class="nav-item">
                         <a href="/home" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                    <a href="/gamespage" class="nav-link">Games</a>
+                        <a href="/gamespage" class="nav-link">Games</a>
                     </li>
                     <li class="nav-item search-bar">
                         <div class="search-container">
                             <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
-                        <div class="search-results" id="search-results"></div> 
+                            <div class="search-results" id="search-results"></div> 
                         </div>
                     </li>
                     <li class="nav-item profile-picture">
@@ -56,57 +59,62 @@
                 </ul>
             </nav>
         </header>
+        <script>
+            document.getElementById("burger-menu").addEventListener("click", function() {
+                document.getElementById("nav-menu").classList.toggle("active");
+            });
+        </script>
         
-    <script src="/js/search.js"></script>
+        <script src="/js/search.js"></script>
 
-        <!-- Background image section -->
-        <div class="background-section" style="background-image: url('images/gamesss.jpg');">
-            <div class="background-overlay"></div> 
-            <h1 class="welcome-text">GameRevs</h1>
-        </div>
-        
-    <!-- Description Section -->
-<section class="description-section">
-    <div class="section-content">
-        <div class="description-item">
-            <img src="images/description1.jpg" alt="Image Description" class="description-image">
-            <div class="description-text">
-                <h3>About GameRevs</h3>
-                <p>GameRevs is an interactive platform dedicated to video game enthusiasts, offering users a place to discover, discuss, and review their favorite games. With an intuitive interface and community-driven content, GameRevs allows gamers to stay updated on the latest releases, share their opinions, and connect with other players worldwide.</p>
+            <!-- Background image section -->
+            <div class="background-section" style="background-image: url('images/gamesss.jpg');">
+                <div class="background-overlay"></div> 
+                <h1 class="welcome-text">GameRevs</h1>
             </div>
-        </div>
-        
-        <div class="description-item reversed">
-            <img src="images/description2.jpg" alt="Image Description" class="description-image">
-            <div class="description-text">
-                <h3>Express Your Thoughts with Reviews</h3>
-                <p>GameRevs encourages players to share their gaming experiences by writing reviews. Whether you want to praise a fantastic title or express your frustration with a buggy release, your voice matters here. Write reviews, rate games, and help others decide what to play next. Your opinion can influence the gaming community and guide future players in their choices.</p>
+            
+        <!-- Description Section -->
+    <section class="description-section">
+        <div class="section-content">
+            <div class="description-item">
+                <img src="images/description1.jpg" alt="Image Description" class="description-image">
+                <div class="description-text">
+                    <h3>About GameRevs</h3>
+                    <p>GameRevs is an interactive platform dedicated to video game enthusiasts, offering users a place to discover, discuss, and review their favorite games. With an intuitive interface and community-driven content, GameRevs allows gamers to stay updated on the latest releases, share their opinions, and connect with other players worldwide.</p>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <div class="section-content">
-        <div class="description-item">
-            <img src="images/description3.jpg" alt="Image Description" class="description-image">
-            <div class="description-text">
-                <h3>Rate Your Experience</h3>
-                <p>After playing a game, GameRevs allows you to rate your experience. Give a star rating and provide feedback on various aspects such as gameplay, graphics, storyline, and user interface. Your ratings contribute to an overall game score that others will rely on when making decisions on what games to try next.</p>
+            
+            <div class="description-item reversed">
+                <img src="images/description2.jpg" alt="Image Description" class="description-image">
+                <div class="description-text">
+                    <h3>Express Your Thoughts with Reviews</h3>
+                    <p>GameRevs encourages players to share their gaming experiences by writing reviews. Whether you want to praise a fantastic title or express your frustration with a buggy release, your voice matters here. Write reviews, rate games, and help others decide what to play next. Your opinion can influence the gaming community and guide future players in their choices.</p>
+                </div>
             </div>
         </div>
 
-        <div class="description-item reversed">
-            <img src="images/description4.jpg" alt="Image Description" class="description-image">
-            <div class="description-text">
-                <h3>Find Your Game</h3>
-                <p>With a vast library of games across multiple genres, GameRevs helps you find the perfect game for your mood and preferences. Use the search bar or browse through categories to discover new titles or revisit classics. Whether you're looking for an action-packed adventure or a relaxing puzzle game, GameRevs has something for every gamer.</p>
+        <div class="section-content">
+            <div class="description-item">
+                <img src="images/description3.jpg" alt="Image Description" class="description-image">
+                <div class="description-text">
+                    <h3>Rate Your Experience</h3>
+                    <p>After playing a game, GameRevs allows you to rate your experience. Give a star rating and provide feedback on various aspects such as gameplay, graphics, storyline, and user interface. Your ratings contribute to an overall game score that others will rely on when making decisions on what games to try next.</p>
+                </div>
+            </div>
+
+            <div class="description-item reversed">
+                <img src="images/description4.jpg" alt="Image Description" class="description-image">
+                <div class="description-text">
+                    <h3>Find Your Game</h3>
+                    <p>With a vast library of games across multiple genres, GameRevs helps you find the perfect game for your mood and preferences. Use the search bar or browse through categories to discover new titles or revisit classics. Whether you're looking for an action-packed adventure or a relaxing puzzle game, GameRevs has something for every gamer.</p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
 
 
 
-</body>
+    </body>
 </html>

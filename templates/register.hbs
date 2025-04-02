@@ -8,18 +8,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-    <header>
+        <header>
             <nav class="navbar section-content">
                 <a href="#" class="nav-logo">
                     <h2 class="logo-text">GameRevs</h2>
                 </a>
-                <ul class="nav-menu">
+                <button class="burger-menu" id="burger-menu">
+                    <i class="fas fa-bars"></i>  
+                </button>
+                <ul class="nav-menu" id="nav-menu">
                     {{#if (eq user.profileType "Admin")}}
                         <li class="nav-item">
                             <a href="/adminhome" class="nav-link">Admin</a>
                         </li>
                     {{/if}}
-
+                    
                     {{#if (eq user.profileType "Guest")}}
                         <li class="nav-item">
                             <a href="/login" class="nav-link">Log In</a>
@@ -29,17 +32,17 @@
                             <a href="/logout" class="nav-link">Log Out</a>
                         </li>
                     {{/if}}
-
+                    
                     <li class="nav-item">
                         <a href="/home" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                    <a href="/gamespage" class="nav-link">Games</a>
+                        <a href="/gamespage" class="nav-link">Games</a>
                     </li>
                     <li class="nav-item search-bar">
                         <div class="search-container">
                             <input type="text" placeholder="Search users..." class="search-input" id="search-bar">
-                        <div class="search-results" id="search-results"></div> <!-- Suggestions appear here -->
+                            <div class="search-results" id="search-results"></div> 
                         </div>
                     </li>
                     <li class="nav-item profile-picture">
@@ -56,6 +59,11 @@
                 </ul>
             </nav>
         </header>
+        <script>
+            document.getElementById("burger-menu").addEventListener("click", function() {
+                document.getElementById("nav-menu").classList.toggle("active");
+            });
+        </script>
     <script src="/js/search.js"></script>
 
     <main class="register-container">
