@@ -1083,12 +1083,6 @@ function loginGuest(req) {
     };
 }
 
-
-
-
-
-
-
 // START OF APPLICATION //
 app.listen(3000, () => {
     console.log("Server is running on port 3000. Access using localhost:3000.");
