@@ -10,6 +10,9 @@ const app = express();
 const templatePath = path.join(__dirname, "../templates");
 const multer = require("multer");
 
+const bcrypt = require("bcrypt");
+const SALT_WORK_FACTOR = 10;
+
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -28,6 +31,28 @@ app.use(express.static("public"));
 
 app.set("view engine", "hbs");
 app.set("views", templatePath);
+
+
+
+/* PASSWORD HASHING FUNCTIONS */
+async function hashPassword(textPassword) {
+    try {
+        const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+        const hash = await bcrypt.hash(textPassword, salt); 
+        return hash;
+    } catch (error) {
+        console.error('Error hashing password:', error);
+    }
+}
+
+async function verifyPassword(inputPassword, dbPassword) {
+    try {
+        const match = await bcrypt.compare(inputPassword, dbPassword);
+        return match;
+    } catch (error) {
+        console.error('Error verifying password:', error);
+    }
+}
 
 
 
@@ -226,10 +251,14 @@ app.get("/logout", (req, res) => {
 // creation of user account
 app.post("/register", async (req, res) => {
     try {
+        
+        // call the hashing function
+        const dbPassword = await hashPassword(req.body.password);
+
         const newUser = await User.create({
             email: req.body.email,
             username: req.body.username,
-            password: req.body.password
+            password: dbPassword
         });
 
         // delete the current guest account
@@ -243,6 +272,7 @@ app.post("/register", async (req, res) => {
             return res.render("register", { errorMessage: "Email or username is already taken" });
         }
         res.status(500).send("Error registering user");
+        console.log(error);
     }
 });
 
@@ -251,7 +281,8 @@ app.post("/login", async (req, res) => {
     try {
         const user = await User.findOne({ username: req.body.username });
 
-        if (user && user.password === req.body.password) {
+        // call the verifying function
+        if (user && verifyPassword(req.body.password, user.password)) {
             // delete current guest account
             delete req.session.user;
             // create a new session, with the new user
